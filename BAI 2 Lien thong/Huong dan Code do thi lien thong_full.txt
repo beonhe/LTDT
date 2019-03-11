@@ -1,0 +1,193 @@
+----------------------- Page 1-----------------------
+
+                                         Th? Liên Thông 
+
+     HU?NG D?N CODE Ð?TH?LIÊN THÔNG 
+
+Chú ý: Trong hu?ng d?n này, ch?nào có c?m t? “b?n vi?t code” hay d?i lo?i th?. Thì 
+
+b?n ph?i vi?t code ch?dó hén. 
+
+        Khi b?n làm t?i ph?n này, thì b?n dã làm du?c vi?c d?c thông tin c?a d  th? t? 
+
+m?t file nào dó vào chuong trình c?a b?n r      i hén. N?u b?n v?n chua làm du?c di?u này 
+
+thì d?ngh? b?n m? l?i file “HU?NG D?N CODE NH?P XU?T MA TR?N K? T?FILE”  d?c 
+
+và làm. Còn n?u b?n dã làm du?c r       i thì chúng ta ti?p t?c hén J 
+
+Nh?c l?i: Thông tin d  th? c?a b?n s?du?c luu tr? trong chuong trình thông qua m?t 
+
+c?u trúc nhu sau dúng không? 
+
+#define MAX 10 // d?nh nghia giá tr?MAX 
+
+#define   inputfile “C:/test.txt” // d?nh nghia du?ng d?n tuy?t d?i d?n file ch?a thông tin 
+
+c?a d  th? 
+
+typedef struct GRAPH  { 
+
+        int n; // s?d?nh c?a d  th? 
+
+        int a[MAX][MAX]; // ma tr?n k? c?a d  th? 
+
+}DOTHI; 
+
+Bu?c 1: xét tính liên thông c?a d  th?, vi?t m?t hàm DiTimCacDinhLienThong nhu 
+
+sau d? di tìm các d?nh j liên thông v?i d?nh i trong d  th?và gán nhãn cho nh?ng d?nh liên 
+
+thông j dó b?ng nhãn c?a d?nh i. 
+
+void DiTimCacDinhLienThong (DOTHI g, int nhan[MAX], int i) 
+
+{ 
+
+        for (int j = 0; j < g.n; j++) 
+
+        { 
+
+               if (g.a[i][j] != 0 && nhan[j]  != nhan[i]) // n?u t  n t?i c?nh gi?a d?nh i và 
+
+d?nh j , d ng th?i nhãn c?a d?nh j khác v?i nhãn c?a d?nh i (nhãn thành ph?n liên thông) 
+
+----------------------- Page 2-----------------------
+
+                                         Th? Liên Thông 
+
+thì th?c hi?n gán nhãn c?a d?nh j = nhãn c?a d?nh i và DiTimCacDinhLienThong v?i 
+
+d?nh j 
+
+                { 
+
+                       nhan[j] = nhan[i]; // gán nhãn cho d?nh j 
+
+                       DiTimCacDinhLienThong (g, nhan, j); // ti?p t?c 
+
+DiTimCacDinhLienThong v?i d?nh j và gán nhãn tuong ?ng ti?p. 
+
+                } 
+
+        } 
+
+} 
+
+Sau dó vi?t hàm XetLienThong nhu sau: 
+
+void XetLienThong(DOTHI g) 
+
+{ 
+
+        int Nhan[MAX]; // t?o m?t m?ng Nhãn d? luu l?i nhãn c?a           các d?nh trong d  th? g 
+
+        int i; 
+
+        for (i=0;i<g.n;i++)  // gán nhãn ban d?u cho t?t c? các d?nh c?a d  th? g là 0 
+
+               Nhan[i] =0; 
+
+        int SoThanhPhanLT = 0; // luu l?i s?thành ph?n liên thông trong d  th? g, ban d?u 
+
+là 0. T?c chua có thành ph?n nào. 
+
+        // duy?t l?n lu?t t?t c? các d?nh và ch?n d?nh có nhãn là 0. Ta b?t d?u xét 
+
+        for (i=0; i<g.n; i++) 
+
+        { 
+
+               if (Nhan[i] == 0)  // có m?t d?nh trong d  th? có nhãn là 0 
+
+                { 
+
+                       SoThanhPhanLT ++; // tang s?thành ph?n liên thông lên 
+
+                       Nhan[i] = SoThanhPhanLT; // gán nhãn cho d?nh dó b?i 
+
+SoThanhPhanLT 
+
+----------------------- Page 3-----------------------
+
+                                         Th? Liên Thông 
+
+                       DiTimCacDinhLienThong(g, Nhan, i); // g?i hàm di tìm các d?nh 
+
+liên thông v?i d?nh i và gán nhãn cho nó. Hàm này du?c khai báo ? sau. 
+
+               } 
+
+        } 
+
+        printf ("So thanh phan lien thong la %d\n",SoThanhPhanLT); 
+
+        /*T?i dây là coi nhu b?n dã hoàn t?t quá trình xét tính liên thông c?a d  th? r      i dó 
+
+J. V?n d? còn l?i là b?n ch? c?n hi?n th?ra nh?ng thành ph?n liên thông c?a nó ra. G?i ý 
+
+d?a vào m?ng Nhãn       */ 
+
+        for (i = 1; i <= SoThanhPhanLT; i++) 
+
+        { 
+
+               printf("Thanh phan lien thong thu %d gom cac dinh ", i); 
+
+               for (int j = 0; j < g.n; j++) 
+
+                { 
+
+                       if (Nhan[j] == i)  /* ki?m tra trong m?ng nhãn dó thì nh?ng d?nh j 
+
+nào du?c gán nhãn là i t?c d?nh j thu?c v?thành ph?n liên thông th? i*/ 
+
+                              printf (" %d ",j) ; 
+
+               } 
+
+               printf("\n"); 
+
+        } 
+
+} 
+
+Bu?c 2: Code trong hàm main d? g?i hàm các hàm tuong ?ng và ch?y. Có th? làm 
+
+nhu sau: 
+
+void main() 
+
+{ 
+
+        DOTHI g; 
+
+        clrscr(); 
+
+----------------------- Page 4-----------------------
+
+                                      Th? Liên Thông 
+
+       if (DocMaTranKe(inputfile, g) == 1) 
+
+       { 
+
+              printf("Da lay thong tin do thi tu file thanh cong.\n\n"); 
+
+              XuatMaTranKe(g); 
+
+              printf("Bam 1 phim bat ki de bat dau xet tinh lien thong cua do thi ...\n\n"); 
+
+              getch(); 
+
+              XetLienThong(g); 
+
+       } 
+
+       getch(); 
+
+} 
+
+             Chúc các b?n may m?n và h?c t?t môn này 
+
+                              GOOD LUCK TO U 
