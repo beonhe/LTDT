@@ -1,20 +1,41 @@
 #include<conio.h>
 #include<stdio.h>
 
-#define MAX 10
-#define inputfile "C:/Users/Administrator/Desktop/THLTDT/Bo du lieu test/test2.txt"
-#define outputfile "C:/Users/Administrator/Desktop/THLTDT/Bo du lieu test/matran.txt"
+#define MAX 100
+#define inputfile "D:/test1.txt"
+#define outputfile "D:/matran.txt"
 typedef struct GRAPH
 {	int n;
 	int a[MAX][MAX];
 }DOTHI;
-
 //==============================================================
 struct STACK
 {
 	int array[100];
 	int size;
 };
+void Init(STACK &stack){
+	stack.size=0;
+}
+void Push(STACK &st, int value){
+	if(st.size+1>=100){
+		return;
+	}
+	st.array[st.size]=value;
+	st.size++;
+}
+//================================================================
+//Tim chu trinh cua do thi
+void TimDuong(int i, DOTHI &g, STACK &st){
+	for(int j=0; j<g.n; j++){
+		if(g.a[i][j]!=0){
+			g.a[i][j]=g.a[j][i]=0;
+			TimDuong(j,g,st);
+		}
+	}
+	Push(st,i);
+	
+}
 //==============================================================
 
 int DocMaTranKe(const char* TenFile,DOTHI &g)
@@ -58,6 +79,7 @@ void XuatFileMaTran(const char* TenFile,DOTHI &g)
 	fclose(f);
 }
 //==============================================================
+//Kien tra la do thi vo huong hay co huong, dua vao tinh doi xung cua  ma tran
 int KiemTra(DOTHI g)
 {
 	for(int i=0;i<g.n;i++)
@@ -79,7 +101,7 @@ void XuatVoHuong(DOTHI g)
 	{	
 		for(int j=0;j<g.n;j++)
 			if(g.a[i][j]!=0 && i<j){
-				printf("%d %d: %d\n",i,j,g.a[i][j]);
+				printf("%d %d: %d\n",i+1,j+1,g.a[i][j]);
 				canh++;
 			}
 		
@@ -91,13 +113,14 @@ void XuatVoHuong(DOTHI g)
 			if(g.a[i][j]!=0){
 				bac[i]++;
 			}
-		printf("Dinh %d co bac: %d\n",i,bac[i]);
+		printf("Dinh %d co bac: %d\n",i+1,bac[i]);
 	}
 	printf("So canh cua ma tran la: %d",canh);
 }
 //==============================================================
 void XuatCoHuong(DOTHI g)
-{	printf("So dinh cua do thi = %d\n",g.n);
+{	
+	printf("So dinh cua do thi = %d\n",g.n);
 	printf("Danh sach canh cua do thi la:\n");
 	int canh=0;
 	int br[g.n], bv[g.n];
@@ -105,7 +128,7 @@ void XuatCoHuong(DOTHI g)
 	{
 		for(int j=0;j<g.n;j++)
 			if(g.a[i][j]!=0){
-				printf("%d %d: %d\n",i,j,g.a[i][j]);
+				printf("%d %d: %d\n",i+1,j+1,g.a[i][j]);
 				canh++;
 			}
 	}
@@ -123,11 +146,13 @@ void XuatCoHuong(DOTHI g)
 					bv[j]++;
 			}
 		}
-		printf("Dinh %d co ban bac ra = %d, bac vao = %d\n",i,br[i],bv[i]);
+		printf("Dinh %d co ban bac ra = %d, bac vao = %d\n",i+1,br[i],bv[i]);
 		
 	}
 	printf("So canh cua ma tran la: %d",canh);
 }
+//==============================================================
+//kiem tra xem ma tran nhap vao co phai la ma tran ke hay khong, duong cheo=0;
 int KTMaTranKe(DOTHI g){
 	for(int i=0; i<g.n; i++)
 		{
@@ -166,8 +191,14 @@ void XetLienThong(DOTHI g)
                } 
 
         }
-        printf("\nSo than phan lien thong la: ");
-		for(i=0; i<=SoThanhPhanLT; i++)
+        if(SoThanhPhanLT==1)
+        {
+        	printf("\nDo thi lien thong!");
+		}
+		else
+			printf("\nDo thi khong lien thong!");
+        printf("\nSo than phan lien thong la: %d",SoThanhPhanLT);
+		for(i=1; i<=SoThanhPhanLT; i++)
         {
 	        	printf("\nThan phan lien thong thu %d gom cac dinh: ",i);
 				for(int j=0; j<g.n; j++){
@@ -178,15 +209,32 @@ void XetLienThong(DOTHI g)
 		}
 }
 //=============================================================
-void DFS(DOTHI g, int i, int LT[]){
+void DFSS(DOTHI g, int i, int LT[]){
 	printf("%4d",i+1);
-	LT[i]=1;
+	LT[i]=1;//danh dau da kiem tra dinh i
 	for(int j=0; j<g.n; j++)
-		if(LT[j]==0 && g.a[i][j]==1)
-			DFS(g,j, LT);
+		if(LT[j]==0 && g.a[i][j]==1)//neu dinh j chua xet va co canh ij thi thuc hien
+			DFSS(g,j, LT);
+}
+void DFS(DOTHI g,int LT[]){
+	for(int i=0; i<g.n; i++){//Khoi tao do thi khong lien thong
+		LT[i]=0;
+	}
+	printf("\n");
+	int dem=1;//dem so thanh phan lien thong
+	printf("Thanh phan lien thong thu %d: ",dem);
+	DFSS(g,0,LT);//kiem tra thanh phan lien thong bat dau tu dinh 0
+	for(int i=0; i<g.n; i++)
+		if(LT[i]==0){
+			dem++;
+			printf("\n");
+			printf("Thanh phan lien thong thu %d: ",dem);
+			DFSS(g,i,LT);
+		}
+	printf("\nDo thi co %d thanh phan lien thong",dem);
 }
 //==============================================================
-int KTEuler(DOTHI g){
+int KTCTEuler(DOTHI g){
 	int br[g.n], bv[g.n];
 	int bac[g.n];
 	if(KiemTra(g)==0){
@@ -198,7 +246,7 @@ int KTEuler(DOTHI g){
 					bac[i]++;
 				}
 			if(bac[i]%2==1){
-				return 1;
+				return 0;
 			}
 		}
 	}
@@ -218,14 +266,96 @@ int KTEuler(DOTHI g){
 			}
 		}
 		if(br[i]!=bv[i])
-			return 1;
+			return 0;
 		}
 	}
-	return 0;
+	return 1;
+}
+//===============================================================
+int KTDDEuler(DOTHI g){
+	int br[g.n], bv[g.n];
+	int bac[g.n];
+	int dem=0;
+	if(KiemTra(g)==0){
+		for(int i=0;i<g.n;i++)
+		{
+			bac[i]=0;	
+			for(int j=0;j<g.n;j++)
+				if(g.a[i][j]!=0){
+					bac[i]++;
+				}
+			if(bac[i]%2==1){
+				dem++;
+			}
+		}
+		if(dem!=2)
+			return 0;
+	}
+	else{
+		for(int i=0;i<g.n;i++)
+		{
+		br[i]=0;
+	
+		for(int j=0;j<g.n;j++){
+			if(g.a[i][j]!=0)
+				br[i]++;
+				bv[j]=0;
+			for(int l=0; l<g.n; l++){
+				
+				if(g.a[l][j]!=0)
+					bv[j]++;
+			}
+		}
+		if(br[i]!=bv[i])
+			return 0;
+		}
+	}
+	return 1;
+	
 }
 //==============================================================
+int CTEuler(DOTHI g, STACK &st)
+{
+	int i,j;
+	int x = 0; 
+	int flag = 0;
+	//Tim diem x la diem bat dau tim chu trinh Euler, diem x phai co bac >0;
+	for(int i=0; i<g.n; i++)
+	{
+		for (j = 0; j < g.n; j++)
+		{
+			if (g.a[i][j] != 0) 
+			{
+				x=i;//lay diem x la diem dau tien dc tim thay co bac >0
+				flag=1;
+				break;
+			}
+		} 
+		if(flag==1)
+				break;
+	
+	}
+	DOTHI temp = g; //copy do thi g sang do thi temp de xu ly tren temp
+	TimDuong(x,temp, st);//tim chu trinh Euler tren do thi temp bang cach xoa canh
+	//Neu con co canh chua xoa thi khong co chu trinh Euler
+	for (i = 0; i < temp.n; i++)
+	{
+		for (j = 0; j < temp.n; j++)
+		{
+			if (temp.a[i][j] != 0) 
+				return 0;
+		}
+	}
+	if (st.array[st.size - 1] != st.array[0])
+		return 0;
+	return 1; 
+}
+
+//===============================================================
 int main()
 {
+	STACK st;
+	Init(st);
 	DOTHI g;
 	int LT[MAX];
 	if(DocMaTranKe(inputfile, g)==1) //doc file duoc
@@ -237,7 +367,9 @@ int main()
 		}
 	}
 	else
-		return 0;
+		return 0;//khong doc duoc thi dung lai
+	//=======================================================
+	//xuat do thi, neu la vo huong thi xuat thong tin cua dt vo huong, co huong thi xuat thong tin dt co huong
 	if(KiemTra(g)==0){
 		printf("Do thi vo huong:");
 		XuatVoHuong(g);
@@ -246,23 +378,24 @@ int main()
 		printf("Do thi co huong:");
 		XuatCoHuong(g);
 	}
-//=============================
-	for(int i=0; i<g.n; i++){
-		LT[i]=0;
-	}
-	printf("\n");
-	int dem=1;
-//	XetLienThong(g);
-/*	DFS(g,0,LT);
-	for(int i=0; i<g.n; i++)
-		if(LT[i]==0){
-			dem++;
-			printf("\n");
-			DFS(g,i,LT);
+	//===============================================================
+	if(KTCTEuler(g)==1){
+		if(CTEuler(g,st)==1){//neu co chu trinh Euler thi xuat ra
+			printf("\nChu trinh Euler cua do thi la: ");
+			for(int i = st.size - 1; i >= 0 ; i--) 
+				printf("%2d ",st.array[i] + 1);
 		}
-	printf("\n%d",dem);*/
-	if(KTEuler(g)==1){
-		printf("\nDo thi nay khong co chu trinh Euler!");
 	}
+	else//neu khong co thi bao khong co
+		printf("\nDo thi khong co chu trinh Euler");
+		printf("\n");
+	
+//	XetLienThong(g);
+//=============================
+/*	DFS(g,LT);
+	
+/*	if(KTEuler(g)==1){
+		printf("\nDo thi nay khong co chu trinh Euler!");
+	}*/
 	return 0;
 }
