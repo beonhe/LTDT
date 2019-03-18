@@ -2,12 +2,46 @@
 #include<stdio.h>
 
 #define MAX 100
-#define inputfile "D:/test1.txt"
+#define inputfile "D:/DFS.txt"
 #define outputfile "D:/matran.txt"
+int LuuVet[MAX];
+int ChuaXet[MAX];
+int Duong[MAX];
 typedef struct GRAPH
 {	int n;
 	int a[MAX][MAX];
 }DOTHI;
+//==============================================================
+struct QUEUE
+{
+	int size;
+	int array[MAX];
+};
+void InitQ(QUEUE &q){
+	q.size=0;
+}
+int PushQ(QUEUE &q, int value){
+	if(q.size+1>=100)
+		return 0;
+	q.array[q.size]=value;
+	q.size++;
+	return 1;
+}
+int PullQ(QUEUE &q, int &value){
+	if(q.size<=0)
+		return 0;
+	value=q.array[0];
+	for(int i=0; i<q.size-1; i++){
+		q.array[i]=q.array[i+1];
+	}
+	q.size--;
+	return 1;
+}
+int isEmptyQ(QUEUE q){
+	if(q.size<=0)
+		return 1;
+	return 0;
+}
 //==============================================================
 struct STACK
 {
@@ -216,7 +250,7 @@ void DFSS(DOTHI g, int i, int LT[]){
 		if(LT[j]==0 && g.a[i][j]==1)//neu dinh j chua xet va co canh ij thi thuc hien
 			DFSS(g,j, LT);
 }
-void DFS(DOTHI g,int LT[]){
+void DFS2(DOTHI g,int LT[]){
 	for(int i=0; i<g.n; i++){//Khoi tao do thi khong lien thong
 		LT[i]=0;
 	}
@@ -352,6 +386,152 @@ int CTEuler(DOTHI g, STACK &st)
 }
 
 //===============================================================
+void DFS(int v, DOTHI g){
+	ChuaXet[v]=1;
+	int u;
+	for(u=0; u<g.n; u++){
+		if(g.a[v][u]!=0 && ChuaXet[u]==0){
+			LuuVet[u]=v;
+			DFS(u,g);
+		}
+	}
+}
+int Stack[MAX];
+int Free[MAX];
+int Trace[MAX];
+int S,F,Last=0;
+void PushS(int v){
+	Last++;
+	Stack[Last]=v;
+}
+int PopS(){
+	int x=Stack[Last];
+	Last--;
+	return x;
+}
+void StackDFS(DOTHI g){
+	int u,v;
+	printf("%d",S+1);
+	ChuaXet[S]=1;
+	PushS(S);
+	do{
+		u=PopS();
+		for(v=0; v<g.n;v++){
+			if(ChuaXet[v]==0 && g.a[u][v]!=0)
+			{
+				printf("%d",v);
+				ChuaXet[v]=1;
+				LuuVet[v]=u;
+				PushS(u);
+				PushS(v);
+				break;
+			}
+		}
+	}while(Last!=0);
+}
+void StackDuyetDFS(DOTHI g, int S, int F){
+	S--;
+	F--;
+	int i;
+	int dem=-1;
+	for(i=0; i<g.n; i++){
+		LuuVet[i]=-1;
+		ChuaXet[i]=0;
+		Duong[i]=-1;
+	}
+	StackDFS(g,S);
+	if(ChuaXet[F]==1){
+		printf("\n%d->%d:",S+1,F+1);
+		i=F;
+		dem++;
+		Duong[dem]=F+1;
+		while(LuuVet[i]!=S){
+			dem++;
+			Duong[dem]=LuuVet[i]+1;
+			i=LuuVet[i];
+		}
+		dem++;
+		Duong[dem]=LuuVet[i]+1;
+		for(int i=dem; i>=0; i--)
+			printf("%2d",Duong[i]);
+	}
+	else{
+		printf("\nKhong co duong di");
+	}
+}
+//===============================================================
+void DuyetDFS(int S, int F, DOTHI g){
+	S--;
+	F--;
+	int i;
+	int dem=-1;
+	for(i=0; i<g.n; i++){
+		LuuVet[i]=-1;
+		ChuaXet[i]=0;
+		Duong[i]=-1;
+	}
+	DFS(S,g);
+	if(ChuaXet[F]==1){
+		printf("\n%d->%d:",S+1,F+1);
+		i=F;
+		dem++;
+		Duong[dem]=F+1;
+		while(LuuVet[i]!=S){
+			dem++;
+			Duong[dem]=LuuVet[i]+1;
+			i=LuuVet[i];
+		}
+		dem++;
+		Duong[dem]=LuuVet[i]+1;
+		for(int i=dem; i>=0; i--)
+			printf("%2d",Duong[i]);
+	}
+	else{
+		printf("\nKhong co duong di");
+	}
+}
+//===============================================================
+
+void BFS(int v, DOTHI g){
+	QUEUE q;
+	InitQ(q);
+	PushQ(q,v);
+	while(!isEmptyQ(q)){
+		PullQ(q,v);
+		ChuaXet[v]=1;
+		for(int u=0; u<g.n; u++){
+			if(g.a[v][u]!=0 && ChuaXet[u]==0){
+				PushQ(q,u);
+				LuuVet[u]=v;
+			}
+		}
+	}
+}
+void DuyetBFS(int S, int F, DOTHI g){
+	S--;
+	F--;
+	int i;
+	for(i=0; i<g.n; i++){
+		LuuVet[i]=-1;
+		ChuaXet[i]=0;
+	}
+	BFS(S,g);
+	if(ChuaXet[F]==1){
+		printf("\n%d->%d:",S+1,F+1);
+		i=F;
+		printf("%d",F+1);
+		while(LuuVet[i]!=S){
+			printf("%3d",LuuVet[i]+1);
+			i=LuuVet[i];
+		}
+		printf("%3d",LuuVet[i]+1);
+	}
+	else{
+		printf("\nKhong co duong di");
+	}
+}
+
+//===============================================================
 int main()
 {
 	STACK st;
@@ -379,7 +559,7 @@ int main()
 		XuatCoHuong(g);
 	}
 	//===============================================================
-	if(KTCTEuler(g)==1){
+/*	if(KTCTEuler(g)==1){
 		if(CTEuler(g,st)==1){//neu co chu trinh Euler thi xuat ra
 			printf("\nChu trinh Euler cua do thi la: ");
 			for(int i = st.size - 1; i >= 0 ; i--) 
@@ -387,12 +567,13 @@ int main()
 		}
 	}
 	else//neu khong co thi bao khong co
-		printf("\nDo thi khong co chu trinh Euler");
-		printf("\n");
-	
+		printf("\nDo thi khong co chu trinh Euler");*/
+//	DuyetBFS(3,6,g);
+	StackDFS(g);
+//	DuyetDFS(3,6,g);
 //	XetLienThong(g);
 //=============================
-/*	DFS(g,LT);
+/*	DFS2(g,LT);
 	
 /*	if(KTEuler(g)==1){
 		printf("\nDo thi nay khong co chu trinh Euler!");
