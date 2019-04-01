@@ -3,7 +3,7 @@
 #include<limits.h>
 #define MAX 100
 #define VOCUC 100000
-#define inputfile "D:/Floyd.txt"
+#define inputfile "D:/test1.txt"
 #define outputfile "D:/matran.txt"
 int Sau_Nut[MAX][MAX];
 int L[MAX][MAX];
@@ -142,11 +142,12 @@ int KTMaTranKe(DOTHI g){
 	return 1;
 }
 //==============================================================
-void Floyd(DOTHI g){
+void Floyd(DOTHI g)
+{
 	int i,j;
-	for(i=0; i<g.n; i++)
+	for(i=1;i<=g.n;i++)
 	{
-		for(j=0; j<g.n; j++)
+		for(j=1;j<=g.n;j++)
 		{
 			if(g.a[i][j]>0)
 			{
@@ -160,11 +161,11 @@ void Floyd(DOTHI g){
 			}
 		}
 	}
-	for(int k=0; k<g.n; k++)
+	for(int k=1;k<=g.n;k++)
 	{
-		for(i=0; i<g.n; i++)
+		for(i=1;i<=g.n;i++)
 		{
-			for(j=0; j<g.n; j++)
+			for(j=1;j<=g.n;j++)
 			{
 				if(L[i][j]>L[i][k]+L[k][j])
 				{
@@ -175,23 +176,26 @@ void Floyd(DOTHI g){
 		}
 	}
 	int S,F;
-	printf("\nNhap dinh bat dau va ket thuc: ");
+	printf("\nnhap dinh bat dau");
 	scanf("%d",&S);
-	scanf("%d",&F)
-	if(Sau_Nut[S][F]==-1){
-		printf("\nKhong co duong di!");
+	printf("\nnhap dinh ket thuc");
+	scanf("%d",&F);
+	if(Sau_Nut[S][F]==-1)
+	{
+		printf("ko co duong di");
 	}
 	else{
-		printf("\nDUong di ngan nhat tu %d->%d: ",S,F);
+		printf("\nduong di ngan nhat tu dinh %d den dinh %d\n",S,F);
 		printf("\t%d",S);
 		int u=S;
-		while(Sau_Nut[u][F]!=F){
+		while(Sau_Nut[u][F]!=F)
+		{
 			u=Sau_Nut[u][F];
-			printf("-->%d",u);
+			printf("->%d",u);
 		}
-		printf("-->%d",F);
-		printf("\n\tVoi tong trong so la %d",L[S][F]);
 	}
+	printf("->%d",F);
+	printf("\nvoi tong trong so la %d",L[S][F]);
 }
 
 //==============================================================

@@ -2,8 +2,8 @@
 #include<stdio.h>
 #include<limits.h>
 #define MAX 100
-#define VOCUC 100000
-#define inputfile "D:/test1.txt"
+#define VOCUC 100
+#define inputfile "D:/test.txt"
 #define outputfile "D:/matran.txt"
 int LuuVet[MAX];
 int ChuaXet[MAX];
@@ -18,9 +18,9 @@ typedef struct GRAPH
 
 //==============================================================
 
-int DocMaTranKe(const char* TenFile,DOTHI &g)
+int DocMaTranKe(const char* T,DOTHI &g)
 {	FILE* f;
-	f = fopen(TenFile,"rt");
+	f = fopen(T,"rt");
 	if(f==NULL)
 	{
 		printf("Khong mo duoc file\n");
@@ -173,9 +173,13 @@ void CapNhatDuongDi(int u, DOTHI g){
 	}
 }
 
+int Chuyen[MAX];
 //===============================================================
 void Dijkstra(int S, int F, DOTHI g){
+	int d=0;
 	int i;
+	S--;
+	F--;
 	for(i=0; i<g.n;i++){
 		ChuaXet[i]=0;
 		DoDaiDuongDiToi[i]=VOCUC;
@@ -189,30 +193,81 @@ void Dijkstra(int S, int F, DOTHI g){
 		CapNhatDuongDi(u,g);
 	}
 	if(ChuaXet[F]==1){
-		printf("\nDuong di ngan nhat tu dinh %d toi dinh %d la: ",S,F);
+		printf("\nDuong di ngan nhat tu dinh %d toi dinh %d la: ",S+1,F+1);
 		i=F;
-		printf("%d",F);
+		Chuyen[d]=F+1;
 		while(LuuVet[i]!=S){
-			printf("<-%d",LuuVet[i]);
+			Chuyen[++d]=LuuVet[i]+1;
 			i=LuuVet[i];
 		}
-		printf("<-%d",LuuVet[i]);
+		Chuyen[++d]=LuuVet[i]+1;
+		printf("%d",S+1);
+		for(int i=d-1; i>=0; i--)
+			printf("-->%d",Chuyen[i]);
 		printf("\t Voi do dai la: %d",DoDaiDuongDiToi[F]);
 	}
 	else
 	{
-		printf("\nKhong co duong di tu dinh %d toi dinh %d",S,F);
+		printf("\nKhong co duong di tu dinh %d toi dinh %d",S+1,F+1);
 	}
 }
 //===============================================================
-
+int Sau_Nut[MAX][MAX];
+int L[MAX][MAX];
+void Floyd(DOTHI g, int S, int F){
+	S--;
+	F--;
+	int i,j,k;
+	for(i=0; i<g.n; i++)
+	{
+		for(j=0; j<g.n; j++)
+		{
+			if(g.a[i][j]>0 && g.a[i][j]<INT_MAX)
+			{
+				Sau_Nut[i][j]=j;
+				L[i][j]=g.a[i][j];
+			}
+		}
+	}
+	for(k=0; k<g.n; k++)
+	{
+		for(i=0; i<g.n; i++)
+		{
+			for(j=0; j<g.n; j++)
+			{
+				if(L[i][j]>L[i][k]+L[k][j])
+				{
+					L[i][j]=L[i][k]+L[k][j];
+					Sau_Nut[i][j]=Sau_Nut[i][k];
+				}
+			}
+		}
+	}
+	if(Sau_Nut[S][F]==-1){
+		printf("\nKhong co duong di!");
+	}
+	else{
+		printf("\nDuong di ngan nhat tu %d->%d: ",S+1,F+1);
+		printf("\t%d",S+1);
+		int u=S;
+		while(Sau_Nut[u][F]!=F){
+			u=Sau_Nut[u][F];
+			printf("-->%d",u+1);
+		}
+		printf("-->%d",F+1);
+		printf("\n\tVoi tong trong so la %d",L[S][F]);
+	}
+}
 //===============================================================
 
 //===============================================================
 int main()
 {
 	DOTHI g;
-	if(DocMaTranKe(inputfile, g)==1) //doc file duoc
+	const char *t;
+	printf("Nhap duong dan file: ");
+	scanf("%c",&t);
+	if(DocMaTranKe(t, g)==1) //doc file duoc
 	{
 		printf("Da lay thong tin do thi tu file thanh cong.\n\n");
 		if(KTMaTranKe(g)==1){
@@ -232,6 +287,31 @@ int main()
 		printf("Do thi co huong:");
 		XuatCoHuong(g);
 	}
-	Dijkstra(0,5,g);
+	int S,F;
+	printf("\nNhap diem bat dau va diem ket thuc: ");
+	scanf("%d%d",&S,&F);
+	int c;
+	do{
+		printf("\n1.Dijkstra\n2.Floyd\n0.Dung");
+		scanf("%d",&c);
+		switch(c){
+			case 1:
+				Dijkstra(S,F,g);
+				break;
+			case 2:
+				for(int i=0; i<MAX; i++)
+					for(int j=0; j<MAX; j++)
+						{
+			
+							Sau_Nut[i][j]=-1;
+							L[i][j]=VOCUC;
+			
+						}
+				Floyd(g,S,F);
+				break;
+			case 0:
+				return 0;
+		}
+	}while(c!=0); 
 	return 0;
 }
