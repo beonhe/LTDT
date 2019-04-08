@@ -568,15 +568,6 @@ int main()
 	}
 	else//neu khong co thi bao khong co
 		printf("\nDo thi khong co chu trinh Euler");*/
-//	DuyetBFS(3,6,g);
-	StackDFS(g);
-//	DuyetDFS(3,6,g);
-//	XetLienThong(g);
-//=============================
-/*	DFS2(g,LT);
-	
-/*	if(KTEuler(g)==1){
-		printf("\nDo thi nay khong co chu trinh Euler!");
-	}*/
+	DuyetBFS(3,6,g);
 	return 0;
 }
